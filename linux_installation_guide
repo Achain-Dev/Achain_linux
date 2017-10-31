@@ -1,0 +1,57 @@
+linux_installation_guide:
+
+1. install denpendancy packages
+        sudo apt-get update
+        sudo apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev
+        export LC_ALL="en_US.UTF-8"
+
+2.  install ntp time and do configurations
+
+        sudo apt-get install ntp
+        sudo apt-get install ntpdate
+        sudo service ntp stop
+        sudo ntpdate -s time.nist.gov
+        sudo service ntp start
+
+3. install the leveldb [1.18 or later]
+        download leveldb version 1.20 [https://github.com/google/leveldb/releases]
+        
+        wget https://github.com/google/leveldb/archive/v1.20.tar.gz
+        tar -zxvf v1.20.tar.gz
+        cd leveldb-1.20/
+        make
+        sudo scp out-static/lib*  /usr/local/lib/        
+        sudo ldconfig
+
+4. == install the miniupnpc [ only  1.7 ]
+        download http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.7.20120830.tar.gz
+        
+        wget -O miniupnpc-1.7.20120830.tar.gz http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.7.20120830.tar.gz
+        cmake .
+        make
+        To install the library and headers on the system use :
+        > su make install
+        > exit
+         alternatively, to install into a specific location, use :
+        > INSTALLPREFIX=/usr/local make install
+
+ 5. == install fast compile library
+        git clone https://github.com/Achain-Dev/fast-compile.git
+        cd fast-compile
+        git checkout static_variant_string_tag
+        git submodule update --init --recursive
+        
+        cmake .
+        make
+        sudo cp libfc.a  /usr/local/lib/
+        
+        cd vendor/secp256k1-zkp/
+        $ ./autogen.sh
+        $ ./configure
+        $ make
+        $ sudo make install 
+        
+ 6. == build BLOCKCHAIN code
+            git clone  http://gitlab.xiaojian.me/ThinkYoung/BlockChain_Linux.git
+            cmake .
+            make
