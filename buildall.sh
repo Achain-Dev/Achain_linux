@@ -39,7 +39,7 @@ miniupnpcpath=$currentpath/miniupnpc-1.7.20120830/
 leveldbtar=$currentpath/v1.20.tar.gz
 miniupnpctar=$currentpath/miniupnpc-1.7.20120830.tar.gz
 fc=$currentpath/fast-compile
-blockchain=$currentpath/BlockChain_Linux
+blockchain=$currentpath/Chain
 
 echo "build and  install the leveldb [1.18 or later]"
 if [ "$Isdownload" = "download" ]
@@ -116,8 +116,8 @@ echo "build BLOCKCHAIN code..."
 if  [ "$Isdownload" = "download" ] ; then
         # currently extranet user could not download source files 
         # will use github open source fiels later
-        mkdir -p BlockChain_Linux
-        git clone https://github.com/Achain-Dev/Achain_ubuntu.git
+        #mkdir -p BlockChain_Linux
+        #git clone https://github.com/Achain-Dev/Achain_ubuntu.git
         echo
 else
     echo
@@ -129,8 +129,8 @@ if [ -d "$blockchain" ]; then
     make
     cd ..
 else
-    echo "Error: no related blockchain_linux files, pls check..."
+    echo "Error: no related Achain_linux files, pls check..."
 fi
 
-echo "Info: finished building work, pls move $blockchain/Chain/Achain to the running directory "
+echo "Info: finished building work, pls move $blockchain/Achain to the running directory "
 
