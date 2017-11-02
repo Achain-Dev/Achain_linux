@@ -52,6 +52,7 @@ linux_installation_guide:
         $ sudo make install 
         
  6. == build BLOCKCHAIN code
-            git clone  http://gitlab.xiaojian.me/ThinkYoung/BlockChain_Linux.git
+            git clone  https://github.com/Achain-Dev/Achain_linux.git
+            cd Achain_linux/Chain/
             cmake .
             make
