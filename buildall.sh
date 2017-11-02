@@ -124,7 +124,7 @@ else
 fi
 
 if [ -d "$blockchain" ]; then
-    cd $blockchain/Chain
+    cd $blockchain
     cmake .
     make
     cd ..
