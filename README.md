@@ -1,2 +1,2 @@
 # Achain_linux
-read linux_build_guide
+read linux_installation_guide
