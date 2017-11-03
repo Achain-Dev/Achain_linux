@@ -1,2 +1,2 @@
 # Achain_linux
-read linux_installation_guide
+please read linux_installation_guide and follow the procedures
