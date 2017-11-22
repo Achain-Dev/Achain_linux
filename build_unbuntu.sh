@@ -125,7 +125,7 @@ fi
 
 if [ -d "$blockchain" ]; then
     cd $blockchain
-    cmake .
+    cmake . -Dcentos=false
     make
     cd ..
 else
