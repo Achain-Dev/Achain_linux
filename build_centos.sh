@@ -102,7 +102,7 @@ else
 fi
 if [ -d "$fc" ]; then
     cd $fc
-    cmake .
+    cmake -DCMAKE_BUILD_TYPE=Release .
     make
     sudo cp libfc.a  /usr/local/lib/
     sudo cp $fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a /usr/local/lib
@@ -117,7 +117,7 @@ echo
 
 if [ -d "$blockchain" ]; then
     cd $blockchain
-    cmake .
+    cmake -DCMAKE_BUILD_TYPE=Release .
     make
     cd ..
 else
