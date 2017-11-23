@@ -68,10 +68,6 @@ endif()
 set(Boost_USE_STATIC_LIBS     ON)
 set(Boost_USE_MULTITHREADED   ON)
 set(Boost_USE_STATIC_RUNTIME  ON)
-# Specify Boost libraries that will use.
-FIND_PACKAGE( Boost 1.54.0 REQUIRED COMPONENTS system program_options chrono context coroutine date_time exception filesystem iostreams locale thread )
-
-set(CMAKE_CXX_FLAGS "-std=c++11 -DALP_GLOBAL_API_LOG=1 -fpermissive" )
 
 # SET BOOST and OPENSSL ENVS
 option(centos "This is a option for CENTOS system" "ON")
@@ -91,6 +87,10 @@ else()
     message("Boost library dir:  ${Boost_LIBRARY_DIR}")
 endif()
 
+# Specify Boost libraries that will use.
+FIND_PACKAGE( Boost 1.54.0 REQUIRED COMPONENTS system program_options chrono context coroutine date_time exception filesystem iostreams locale thread )
+
+set(CMAKE_CXX_FLAGS "-std=c++11 -DALP_GLOBAL_API_LOG=1 -fpermissive" )
 
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} 
         "./libraries/include"
