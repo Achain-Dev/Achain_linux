@@ -51,12 +51,12 @@ linux_installation_guide:
      6). build BLOCKCHAIN code
                 # If you have cloned from https://github.com/Achain-Dev/Achain_linux.git
                 cd Achain_linux/Chain/
-                cmake .  -Dcentos=false
+                cmake . [ -DBOOST_ROOT=xxxx  -DOPENSSL_ROOT_DIR=xxxx]
                 make
                 # else 
                 git clone  https://github.com/Achain-Dev/Achain_linux.git
                 cd Achain_linux/Chain/
-                cmake . -Dcentos=false
+                cmake . [ -DBOOST_ROOT=xxxx  -DOPENSSL_ROOT_DIR=xxxx]
                 make
                 
             NOTE : if you install boost and openssl into some other directory, you need change the CMakeList.txt,
@@ -125,12 +125,12 @@ linux_installation_guide:
      7). build BLOCKCHAIN code
                 # If you have cloned from https://github.com/Achain-Dev/Achain_linux.git
                 cd Achain_linux/Chain/
-                cmake .
+                cmake . [ -DBOOST_ROOT=xxxx  -DOPENSSL_ROOT_DIR=xxxx]
                 make
                 # else 
                 git clone  https://github.com/Achain-Dev/Achain_linux.git
                 cd Achain_linux/Chain/
-                cmake .
+                cmake . [ -DBOOST_ROOT=xxxx  -DOPENSSL_ROOT_DIR=xxxx]
                 make
                 
        NOTE : if you install boost and openssl into some other directory, you need change the CMakeList.txt,
