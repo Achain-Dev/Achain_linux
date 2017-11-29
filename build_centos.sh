@@ -5,10 +5,25 @@
 # default GCC 4.8.5 for Centos7.3.1611 or upgrade GCC to higher version
 # pre-installation:
 # install denpendancy packages
-#         sudo yum -y install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev
-#             export LC_ALL="en_US.UTF-8"
+#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
+#  >>>> export LC_ALL="en_US.UTF-8"
 #-------------------------------------------------------------------------------------------             
-#    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory
+#    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
+#     1).  install boost 1.59 
+#           wget http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
+#           tar -zxvf boost_1_59_0.tar.gz
+#           cd boost_1_59_0
+#           ./bootstrap.sh  
+#           ./b2
+#           ./b2 install
+           
+#     2). install openssl 1.0.2k
+#           wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2k.tar.gz
+#           tar -zxvf openssl-1.0.2k.tar.gz
+#           cd openssl-1.0.2k
+#           ./config
+#           make
+#           make install
 #--------------------------------------------------------------------------------------------
 #
 echo "Warning: make sure you have installed dependent packages in your system"
