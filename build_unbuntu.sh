@@ -112,20 +112,12 @@ else
     echo "Error: no related fast-compile files, pls check..."
 fi
 
-echo "build BLOCKCHAIN code..."
-if  [ "$Isdownload" = "download" ] ; then
-        # currently extranet user could not download source files 
-        # will use github open source fiels later
-        #mkdir -p BlockChain_Linux
-        #git clone https://github.com/Achain-Dev/Achain_linux.git
-        echo
-else
-    echo
-fi
-
+echo
+echo "build Achain code..."
+echo
 if [ -d "$blockchain" ]; then
     cd $blockchain
-    cmake . -Dcentos=false
+    cmake . 
     make
     cd ..
 else
