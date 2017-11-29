@@ -64,31 +64,34 @@ elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
     endif()
 endif()
 
-# Boost settings
+# SET BOOST and OPENSSL ENVS
+
+set(BOOST_ROOT  $ENV{BOOST_ROOT})
+FIND_PACKAGE( Boost 1.54.0 REQUIRED COMPONENTS system program_options chrono context coroutine date_time exception filesystem iostreams locale thread )
+if(Boost_FOUND)
+    message("Boost include dir: ${Boost_INCLUDE_DIR}")
+    message("Boost library dir: ${Boost_LIBRARY_DIR}") 
+else(Boost_FOUND)
+    message(FATAL_ERROR "BOOST not found!")
+endif(Boost_FOUND)
+
 set(Boost_USE_STATIC_LIBS     ON)
 set(Boost_USE_MULTITHREADED   ON)
 set(Boost_USE_STATIC_RUNTIME  ON)
 
-# Specify Boost libraries that will use.
-FIND_PACKAGE( Boost 1.54.0 REQUIRED COMPONENTS system program_options chrono context coroutine date_time exception filesystem iostreams locale thread )
+set( OPENSSL_ROOT_DIR  $ENV{OPENSSL_ROOT_DIR} )
+find_package(PkgConfig REQUIRED)
+pkg_search_module(OPENSSL REQUIRED openssl)
 
-# SET BOOST and OPENSSL ENVS
-option(centos "This is a option for CENTOS system" "ON")
-if(${centos} STREQUAL "ON")
-    message("warning: set boost envs and openssl envs for CENTOS sytem; maybe you need change it")
-    set(Boost_INCLUDE_DIR  "/usr/local/include/boost")
-    set(Boost_LIBRARY_DIR   "/usr/local/lib")
-    set(OPENSSL_LIB_PATH  "/usr/local/ssl/lib/")
-    message("Boost include dir: ${Boost_INCLUDE_DIR}")
-    message("Boost library dir: ${Boost_LIBRARY_DIR}")
-    message("OpenSSL libraries: ${OPENSSL_LIB_PATH}")
+if( OPENSSL_FOUND )
+    set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+    set(OPENSSL_LIBRARY_DIR ${OPENSSL_ROOT_DIR}/lib)
+    message(STATUS "OpenSSL root and include directories  ${OPENSSL_ROOT_DIR},   ${OPENSSL_INCLUDE_DIR}  ")
 else()
-    message("warning: set boost envs and openssl envs for UBUNTU sytem; maybe you need change it")
-    set(Boost_INCLUDE_DIR  "/usr/include/boost")
-    set(Boost_LIBRARY_DIR  "/usr/lib/x86_64-linux-gnu")
-    message("Boost include dir: ${Boost_INCLUDE_DIR}")
-    message("Boost library dir:  ${Boost_LIBRARY_DIR}")
+    message(FATAL_ERROR "OPENSSL not found!")
 endif()
+
+message(STATUS "openssl_libraries=${OPENSSL_LIBRARIES}")
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -DALP_GLOBAL_API_LOG=1 -fpermissive" )
 
@@ -98,8 +101,8 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
 )
 
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIR} 
-        ${OPENSSL_LIB_PATH}
-         "./"
+        ${OPENSSL_LIBRARY_DIR}
+          "./"
         "/usr/local/lib"
         "/usr/lib64"
         "libraries/api"
@@ -127,4 +130,4 @@ set_target_properties(total PROPERTIES  IMPORTED_LOCATION_RELEASE ./libtotal.a  
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} total glua fc libsecp256k1.a libleveldb.a libminiupnpc.a ${Boost_LIBRARIES} libcrypto.a dl pthread)
+target_link_libraries(${PROJECT_NAME} total glua fc libsecp256k1.a libleveldb.a libminiupnpc.a ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} dl pthread)
