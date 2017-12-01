@@ -3,7 +3,7 @@
 #befor installation, make sure you have installed dependent packages in your system
 # for ubuntu systems, do as following
         # sudo apt-get update
-        # sudo apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev 
+        # sudo apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl pkg-config build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev 
 
         # echo "install ntp time and do configurations..."
         # sudo apt-get install ntp 
