@@ -5,7 +5,7 @@
 # default GCC 4.8.5 for Centos7.3.1611 or upgrade GCC to higher version
 # pre-installation:
 # install denpendancy packages
-#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
+#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel pkgconfig build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
 #  >>>> export LC_ALL="en_US.UTF-8"
 #-------------------------------------------------------------------------------------------             
 #    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
