@@ -65,7 +65,9 @@ elseif( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" )
 endif()
 
 # SET BOOST and OPENSSL ENVS
-
+set(Boost_USE_STATIC_LIBS     ON)
+set(Boost_USE_MULTITHREADED   ON)
+set(Boost_USE_STATIC_RUNTIME  ON)
 set(BOOST_ROOT  $ENV{BOOST_ROOT})
 FIND_PACKAGE( Boost 1.54.0 REQUIRED COMPONENTS system program_options chrono context coroutine date_time exception filesystem iostreams locale thread )
 if(Boost_FOUND)
@@ -74,10 +76,6 @@ if(Boost_FOUND)
 else(Boost_FOUND)
     message(FATAL_ERROR "BOOST not found!")
 endif(Boost_FOUND)
-
-set(Boost_USE_STATIC_LIBS     ON)
-set(Boost_USE_MULTITHREADED   ON)
-set(Boost_USE_STATIC_RUNTIME  ON)
 
 set( OPENSSL_ROOT_DIR  $ENV{OPENSSL_ROOT_DIR} )
 find_package(PkgConfig REQUIRED)
@@ -122,12 +120,12 @@ add_library(fc STATIC IMPORTED)
 set_target_properties(fc PROPERTIES  IMPORTED_LOCATION /usr/local/lib/libfc.a)
 
 
-add_library(glua ${GLUA_SRC})
+add_library(glua STATIC ${GLUA_SRC})
 set_target_properties(glua PROPERTIES  IMPORTED_LOCATION_RELEASE ./libglua.a  IMPORTED_LINK_INTERFACE_LIBRARIES fc)
 
-add_library(total ${API_SRC} ${BLOCKCHAIN_SRC} ${CLI_SRC} ${CLIENT_SRC} ${DB_SRC} ${NET_SRC} ${RPC_SRC} ${RPC_STUBS_SRC} ${UTILITIES_SRC} ${WALLET_SRC})
+add_library(total STATIC ${API_SRC} ${BLOCKCHAIN_SRC} ${CLI_SRC} ${CLIENT_SRC} ${DB_SRC} ${NET_SRC} ${RPC_SRC} ${RPC_STUBS_SRC} ${UTILITIES_SRC} ${WALLET_SRC})
 set_target_properties(total PROPERTIES  IMPORTED_LOCATION_RELEASE ./libtotal.a  IMPORTED_LINK_INTERFACE_LIBRARIES fc)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} total glua fc libsecp256k1.a libleveldb.a libminiupnpc.a ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES} dl pthread)
+target_link_libraries(${PROJECT_NAME} total glua fc libsecp256k1.a libleveldb.a libminiupnpc.a ${Boost_LIBRARIES} libcrypto.a dl pthread)
