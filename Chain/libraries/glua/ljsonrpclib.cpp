@@ -1,5 +1,6 @@
 #define ljsonrpclib_cpp
 
+#include <boost/asio.hpp>
 #include "glua/lprefix.h"
 
 
@@ -10,7 +11,7 @@
 #include <time.h>
 #include <memory>
 #include <mutex>
-#include <boost/asio.hpp>
+//#include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
 #include "glua/lua.h"
