@@ -69,6 +69,8 @@ namespace thinkyoung {
             fc::variant blockchain_get_pretty_transaction_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant blockchain_get_pretty_contract_transaction_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant blockchain_get_pretty_contract_transaction_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
+            fc::variant blockchain_get_contract_result_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
+            fc::variant blockchain_get_contract_result_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant blockchain_get_block_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant blockchain_get_block_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant blockchain_get_block_transactions_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
@@ -131,6 +133,8 @@ namespace thinkyoung {
             fc::variant blockchain_list_pub_all_address_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant blockchain_get_events_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant blockchain_get_events_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
+            fc::variant blockchain_get_transaction_id_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
+            fc::variant blockchain_get_transaction_id_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant network_add_node_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant network_add_node_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant network_get_connection_count_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
@@ -361,6 +365,8 @@ namespace thinkyoung {
             fc::variant wallet_transfer_to_contract_testing_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant wallet_get_contracts_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant wallet_get_contracts_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
+            fc::variant create_transfer_transaction_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
+            fc::variant create_transfer_transaction_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant wallet_scan_contracts_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant wallet_scan_contracts_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant about_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
@@ -419,6 +425,8 @@ namespace thinkyoung {
             fc::variant get_contract_balance_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant call_contract_testing_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant call_contract_testing_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
+            fc::variant call_contract_local_emit_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
+            fc::variant call_contract_local_emit_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant call_contract_offline_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);
             fc::variant call_contract_offline_named(fc::rpc::json_connection* json_connection, const fc::variant_object& parameters);
             fc::variant load_contract_to_file_positional(fc::rpc::json_connection* json_connection, const fc::variants& parameters);

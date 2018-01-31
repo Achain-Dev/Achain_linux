@@ -30,6 +30,7 @@
             std::pair<thinkyoung::blockchain::TransactionIdType, thinkyoung::blockchain::TransactionEntry> blockchain_get_transaction(const std::string& transaction_id_prefix, bool exact = fc::json::from_string("false").as<bool>()) const override;
             thinkyoung::wallet::PrettyTransaction blockchain_get_pretty_transaction(const std::string& transaction_id_prefix, bool exact = fc::json::from_string("false").as<bool>()) const override;
             thinkyoung::wallet::PrettyContractTransaction blockchain_get_pretty_contract_transaction(const std::string& transaction_id_prefix, bool exact = fc::json::from_string("false").as<bool>()) const override;
+            thinkyoung::blockchain::ContractTrxInfo blockchain_get_contract_result(const std::string& result_id) const override;
             fc::optional<thinkyoung::blockchain::BlockEntry> blockchain_get_block(const std::string& block) const override;
             std::map<thinkyoung::blockchain::TransactionIdType, thinkyoung::blockchain::TransactionEntry> blockchain_get_block_transactions(const std::string& block) const override;
             fc::optional<thinkyoung::blockchain::AccountEntry> blockchain_get_account(const std::string& account) const override;
@@ -61,6 +62,7 @@
             unordered_map<string, string> blockchain_get_forever_contracts() const override;
             std::vector<std::string> blockchain_list_pub_all_address(const std::string& pub_key) const override;
             std::vector<thinkyoung::blockchain::EventOperation> blockchain_get_events(uint32_t block_number, const thinkyoung::blockchain::TransactionIdType& trx_id) const override;
+            thinkyoung::blockchain::TransactionIdType blockchain_get_transaction_id(const thinkyoung::blockchain::SignedTransaction& transaction_to_broadcast) override;
             void network_add_node(const std::string& node, const std::string& command = fc::json::from_string("\"add\"").as<std::string>()) override;
             uint32_t network_get_connection_count() const override;
             std::vector<fc::variant_object> network_get_peer_info(bool not_firewalled = fc::json::from_string("false").as<bool>()) const override;
@@ -176,6 +178,7 @@
             thinkyoung::wallet::WalletTransactionEntry wallet_transfer_to_contract(double amount_to_transfer, const std::string& asset_symbol, const std::string& from_account_name, const std::string& to_contract, double amount_for_exec) override;
             std::vector<thinkyoung::blockchain::Asset> wallet_transfer_to_contract_testing(double amount_to_transfer, const std::string& asset_symbol, const std::string& from_account_name, const std::string& to_contract) override;
             vector<string> wallet_get_contracts(const std::string& account_name = fc::json::from_string("\"\"").as<std::string>()) override;
+            thinkyoung::blockchain::SignedTransaction create_transfer_transaction(const std::string& amount_to_transfer, const std::string& asset_symbol, const std::string& from_account_name, const std::string& to_address, const thinkyoung::blockchain::Imessage& memo_message = fc::json::from_string("\"\"").as<thinkyoung::blockchain::Imessage>(), const thinkyoung::wallet::VoteStrategy& strategy = fc::json::from_string("\"vote_recommended\"").as<thinkyoung::wallet::VoteStrategy>()) override;
             void wallet_scan_contracts() override;
             fc::variant_object about() const override;
             fc::variant_object get_info() const override;
@@ -205,6 +208,7 @@
             thinkyoung::blockchain::ContractEntryPrintable get_contract_info(const std::string& contract) override;
             std::vector<thinkyoung::blockchain::BalanceEntry> get_contract_balance(const std::string& contract) override;
             std::vector<thinkyoung::blockchain::Asset> call_contract_testing(const std::string& contract, const std::string& caller_name, const std::string& function_name, const std::string& params) override;
+            std::vector<thinkyoung::blockchain::EventOperation> call_contract_local_emit(const std::string& contract, const std::string& caller_name, const std::string& function_name, const std::string& params) override;
             std::string call_contract_offline(const std::string& contract, const std::string& caller_name, const std::string& function_name, const std::string& params) override;
             thinkyoung::blockchain::ContractEntryPrintable load_contract_to_file(const std::string& contract, const fc::path& file) override;
             thinkyoung::blockchain::TransactionIdType get_result_trx_id(const thinkyoung::blockchain::TransactionIdType& request_id) override;

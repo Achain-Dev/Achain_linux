@@ -1,16 +1,30 @@
 #!/bin/sh
 #linux_installation_guide
-#befor installation, make sure you have installed dependent packages in your system
-# for ubuntu systems, do as following
-        # sudo apt-get update
-        # sudo apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev 
-
-        # echo "install ntp time and do configurations..."
-        # sudo apt-get install ntp 
-        # sudo apt-get install ntpdate
-        # sudo service ntp stop
-        # sudo ntpdate -s time.nist.gov
-        # sudo service ntp start
+# befor compile, make sure you have installed dependent packages in your system
+# for Centos systems, do as following
+# default GCC 4.8.5 for Centos7.3.1611 or upgrade GCC to higher version
+# pre-installation:
+# install denpendancy packages
+#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel pkgconfig build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
+#  >>>> export LC_ALL="en_US.UTF-8"
+#-------------------------------------------------------------------------------------------             
+#    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
+#     1).  install boost 1.59 
+#           wget http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
+#           tar -zxvf boost_1_59_0.tar.gz
+#           cd boost_1_59_0
+#           ./bootstrap.sh  
+#           ./b2
+#           ./b2 install
+           
+#     2). install openssl 1.0.2k
+#           wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2k.tar.gz
+#           tar -zxvf openssl-1.0.2k.tar.gz
+#           cd openssl-1.0.2k
+#           ./config
+#           make
+#           make install
+#--------------------------------------------------------------------------------------------
 #
 echo "Warning: make sure you have installed dependent packages in your system"
 echo "if not, pls read the buildall.sh and run the comment scripts in the beginning"
@@ -112,16 +126,9 @@ else
     echo "Error: no related fast-compile files, pls check..."
 fi
 
-echo "build BLOCKCHAIN code..."
-if  [ "$Isdownload" = "download" ] ; then
-        # currently extranet user could not download source files 
-        # will use github open source fiels later
-        #mkdir -p BlockChain_Linux
-        #git clone https://github.com/Achain-Dev/Achain_ubuntu.git
-        echo
-else
-    echo
-fi
+echo
+echo "build Achain linux code..."
+echo
 
 if [ -d "$blockchain" ]; then
     cd $blockchain
