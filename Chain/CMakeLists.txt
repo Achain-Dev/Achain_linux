@@ -78,8 +78,10 @@ else(Boost_FOUND)
 endif(Boost_FOUND)
 
 set( OPENSSL_ROOT_DIR  $ENV{OPENSSL_ROOT_DIR} )
-find_package(PkgConfig REQUIRED)
-pkg_search_module(OPENSSL REQUIRED openssl)
+find_package(OpenSSL REQUIRED)
+# if find_package(OpenSSL REQUIRED) not work, comment it and uncomment the following two pkg
+#find_package(PkgConfig REQUIRED)
+#pkg_search_module(OPENSSL REQUIRED openssl)
 
 if( OPENSSL_FOUND )
     set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
@@ -100,7 +102,6 @@ INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR}
 
 LINK_DIRECTORIES( ${Boost_LIBRARY_DIR} 
         ${OPENSSL_LIBRARY_DIR}
-          "./"
         "/usr/local/lib"
         "/usr/lib64"
         "libraries/api"
@@ -126,6 +127,6 @@ set_target_properties(glua PROPERTIES  IMPORTED_LOCATION_RELEASE ./libglua.a  IM
 add_library(total STATIC ${API_SRC} ${BLOCKCHAIN_SRC} ${CLI_SRC} ${CLIENT_SRC} ${DB_SRC} ${NET_SRC} ${RPC_SRC} ${RPC_STUBS_SRC} ${UTILITIES_SRC} ${WALLET_SRC})
 set_target_properties(total PROPERTIES  IMPORTED_LOCATION_RELEASE ./libtotal.a  IMPORTED_LINK_INTERFACE_LIBRARIES fc)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} Main.cpp)
+add_executable(${PROJECT_NAME} Main.cpp)
 
 target_link_libraries(${PROJECT_NAME} total glua fc libsecp256k1.a libleveldb.a libminiupnpc.a ${Boost_LIBRARIES} libcrypto.a dl pthread)
