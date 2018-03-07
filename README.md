@@ -10,7 +10,7 @@
 
 We already support the following platforms:
 
-* CentOS/RHEL 7.3.1611 
+* CentOS/RHEL 7.2.1511 / 7.3.1611 
 * Ubuntu 16.04
 * Fedora 27 / 25
 * Docker
