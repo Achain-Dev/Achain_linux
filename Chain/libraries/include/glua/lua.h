@@ -11,7 +11,6 @@
 
 #include <stdarg.h>
 #include <stddef.h>
-#include <string>
 
 #include "glua/luaconf.h"
 
