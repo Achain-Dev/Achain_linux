@@ -5,8 +5,8 @@
 # mac
 # pre-installation:
 # install denpendancy packages
-#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel pkgconfig build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
-#  >>>> export LC_ALL="en_US.UTF-8"
+#  >>>> brew install automake autoconf libtool autotools cmake git openssl readline
+#       brew link --force openssl readline
 #-------------------------------------------------------------------------------------------             
 #    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
 #     1).  install boost 1.59 
@@ -14,16 +14,18 @@
 #           tar -zxvf boost_1_59_0.tar.gz
 #           cd boost_1_59_0
 #           ./bootstrap.sh  
-#           ./b2
+#           ./b2 cxxflags="-arch x86_64" linkflags="-arch x86_64"
 #           ./b2 install
            
 #     2). install openssl 1.0.2k
 #           curl -LO https://www.openssl.org/source/old/1.0.2/openssl-1.0.2k.tar.gz
 #           tar -zxvf openssl-1.0.2k.tar.gz
 #           cd openssl-1.0.2k
-#           ./config
-#           make
+#           ./Configure darwin64-x86_64-cc --prefix= xxx 
+#           make depend
 #           make install
+
+#           details please refer to the WIKI(https://wiki.openssl.org/index.php/Compilation_and_Installation#OS_X)
 #--------------------------------------------------------------------------------------------
 #
 echo "Warning: make sure you have installed dependent packages in your system"
