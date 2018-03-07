@@ -15,11 +15,11 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     endif()
 endif()
 
-find_library(READLINE_LIBRARIES NAMES readline)
-find_path(READLINE_INCLUDE_DIR readline/readline.h)
-#if(NOT READLINE_INCLUDE_DIR OR NOT READLINE_LIBRARIES)
-#  MESSAGE(FATAL_ERROR "Could not find lib readline.")
-#endif()
+find_library(myReadlineLib NAMES readline)
+find_path(myReadlineHead readline/readline.h)
+if(NOT myReadlineLib OR NOT myReadlineHead)
+  MESSAGE(FATAL_ERROR "Could not find lib readline.")
+endif()
 
 AUX_SOURCE_DIRECTORY(libraries/api API_SRC)
 AUX_SOURCE_DIRECTORY(libraries/cli CLI_SRC)
@@ -38,7 +38,17 @@ LIST(REMOVE_ITEM GLUA_SRC "libraries/glua/main.cpp" "libraries/glua/cdemo1.cpp" 
 if( APPLE )
     # Apple Specific Options Here
     message( STATUS "Configuring BitShares on OS X" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++ -Wall" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++ -Wall")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -stdlib=libc++ -Wall -DALP_GLOBAL_API_LOG=1 -fpermissive" )
+
+    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -Wall")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWEBSOCKETPP_STRICT_MASKING")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ASIO_HAS_STD_CHRONO")
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DALP_GLOBAL_API_LOG=1 -fpermissive" )
+
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-unused-local-typedefs -fmax-errors=3 -msse4.2" ) 
+    #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wno-unused-local-typedefs -fmax-errors=3 -msse4.2" )
 else( APPLE )
     # Linux Specific Options Here
     message( STATUS "Configuring Achain on Linux" )
@@ -95,7 +105,9 @@ message(STATUS "openssl_libraries=${OPENSSL_LIBRARIES}")
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -DALP_GLOBAL_API_LOG=1 -fpermissive" )
 
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} 
+INCLUDE_DIRECTORIES(
+        "/usr/local/Cellar/openssl/1.0.2m/include/"
+        ${Boost_INCLUDE_DIR} 
         "./libraries/include"
         "../include"
 )
