@@ -2,7 +2,7 @@
 ##
 - Please read [linux_installation_guide](https://github.com/Achain-Dev/Achain_linux/blob/master/linux_installation_guide) and follow  procedures in the document. 
 
-- Besides, you could also just run **[ ./build_centos.sh download ](https://github.com/Achain-Dev/Achain_linux/blob/master/build_centos.sh)** or **[ ./build_unbuntu.sh download ](https://github.com/Achain-Dev/Achain_linux/blob/master/build_unbuntu.sh)** to build Achain efficiently.
+- Besides, you could also just run **[ ./build_centos.sh download ](https://github.com/Achain-Dev/Achain_linux/blob/master/build_centos.sh)** or **[ ./build_unbuntu.sh download ](https://github.com/Achain-Dev/Achain_linux/blob/master/build_ubuntu.sh)** to build Achain efficiently.
 
 
 # Supported Linux Platforms
