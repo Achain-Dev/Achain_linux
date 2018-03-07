@@ -39,7 +39,6 @@
 #include <glua/thinkyoung_lua_api.h>
 #include <glua/thinkyoung_lua_lib.h>
 #include <glua/glua_debug_file.h>
-//#include <glua/lremote_debugger.h>
 
 using thinkyoung::lua::api::global_glua_chain_api;
 
