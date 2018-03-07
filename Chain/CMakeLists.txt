@@ -95,8 +95,10 @@ message(STATUS "openssl_libraries=${OPENSSL_LIBRARIES}")
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -DALP_GLOBAL_API_LOG=1 -fpermissive" )
 
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} 
-        "./libraries/include"
+INCLUDE_DIRECTORIES( "${Boost_INCLUDE_DIR}"
+        "${Boost_INCLUDE_DIR}"
+        "/usr/local/Cellar/openssl/1.0.2n/include"
+        "libraries/include"
         "../include"
 )
 
