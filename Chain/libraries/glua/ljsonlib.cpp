@@ -11,8 +11,6 @@
 #include <sstream>
 #include <cassert>
 
-//#include <glua/lua.h>
-
 #include <glua/lauxlib.h>
 #include <glua/lualib.h>
 #include <glua/glua_tokenparser.h>
