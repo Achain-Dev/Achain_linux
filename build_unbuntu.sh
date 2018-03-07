@@ -2,15 +2,15 @@
 #linux_installation_guide
 #befor installation, make sure you have installed dependent packages in your system
 # for ubuntu systems, do as following
-        #  apt-get update
-        #  apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev 
+        # sudo apt-get update
+        # sudo apt-get install cmake git libreadline-dev uuid-dev g++ libncurses5-dev zip libssl-dev openssl pkg-config build-essential python-dev autoconf autotools-dev libicu-dev libbz2-dev libboost-dev libboost-all-dev 
 
         # echo "install ntp time and do configurations..."
-        #  apt-get install ntp 
-        #  apt-get install ntpdate
-        #  service ntp stop
-        #  ntpdate -s time.nist.gov
-        #  service ntp start
+        # sudo apt-get install ntp 
+        # sudo apt-get install ntpdate
+        # sudo service ntp stop
+        # sudo ntpdate -s time.nist.gov
+        # sudo service ntp start
 #
 echo "Warning: make sure you have installed dependent packages in your system"
 echo "if not, pls read the buildall.sh and run the comment scripts in the beginning"
@@ -61,7 +61,7 @@ fi
 if [ -d "$leveldbpath" ]; then
     cd $leveldbpath
     make
-     scp out-static/lib*  /usr/local/lib/
+    sudo scp out-static/lib*  /usr/local/lib/
     cd ..
 else
     echo "Error: there are no related leveldb files, pls check ..."
@@ -86,7 +86,7 @@ if [ -d "$miniupnpcpath" ]; then
     cd $miniupnpcpath
     cmake .
     make
-     make install
+    sudo make install
     cd ..
 else
     echo "Error: there are no related miniupnpc files, pls check ..."
@@ -105,27 +105,19 @@ if [ -d "$fc" ]; then
     cd $fc
     cmake .
     make
-     cp libfc.a  /usr/local/lib/
-     cp $fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a /usr/local/lib
+    sudo cp libfc.a  /usr/local/lib/
+    sudo cp $fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a /usr/local/lib
     cd ..
 else
     echo "Error: no related fast-compile files, pls check..."
 fi
 
-echo "build BLOCKCHAIN code..."
-if  [ "$Isdownload" = "download" ] ; then
-        # currently extranet user could not download source files 
-        # will use github open source fiels later
-        #mkdir -p BlockChain_Linux
-        #git clone https://github.com/Achain-Dev/Achain_linux.git
-        echo
-else
-    echo
-fi
-
+echo
+echo "build Achain code..."
+echo
 if [ -d "$blockchain" ]; then
     cd $blockchain
-    cmake .
+    cmake . 
     make
     cd ..
 else
