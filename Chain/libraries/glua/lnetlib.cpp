@@ -11,7 +11,6 @@
 #include <sstream>
 #include <string>
 #include <thread>
-//#include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
 #include <glua/lua.h>
