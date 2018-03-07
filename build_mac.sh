@@ -119,7 +119,7 @@ else
 fi
 if [ -d "$fc" ]; then
     cd $fc
-    cmake .
+    cmake . [ -DOPENSSL_ROOT_DIR=xxx -DBOOST_ROOT_DIR=xxx] 
     make
     sudo cp libfc.a  /usr/local/lib/
     sudo cp $fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a /usr/local/lib
