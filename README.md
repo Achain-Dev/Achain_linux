@@ -12,13 +12,13 @@ We already support the following platforms:
 
 * CentOS/RHEL 7.2.1511 / 7.3.1611 
 * Ubuntu 16.04
+* Mac os
 * Fedora 27 / 25
 * Docker
 
 
 We will support the following platforms in the future:
 
-* Mac os
 * Oracle Linux
 * Debian
 
