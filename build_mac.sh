@@ -5,8 +5,8 @@
 # mac
 # pre-installation:
 # install denpendancy packages
-#  >>>> brew install automake autoconf libtool autotools cmake git openssl readline
-#       brew link --force openssl readline
+#  >>>> brew install automake autoconf libtool autotools cmake git openssl readline curl 
+#       brew link --force openssl readline curl
 #-------------------------------------------------------------------------------------------             
 #    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
 #     1).  install boost 1.59 
