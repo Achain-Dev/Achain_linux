@@ -1,29 +1,31 @@
 #!/bin/sh
-#linux_installation_guide
+# mac_installation_guide
 # befor compile, make sure you have installed dependent packages in your system
-# for Centos systems, do as following
-# default GCC 4.8.5 for Centos7.3.1611 or upgrade GCC to higher version
+# for MacOs systems, do as following
+# mac
 # pre-installation:
 # install denpendancy packages
-#  >>>> sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel openssl-static pkgconfig build-essential python-dev autoconf autotools-devel libicu-devel libbz2-devel
-#  >>>> export LC_ALL="en_US.UTF-8"
+#  >>>> brew install automake autoconf libtool autotools cmake git openssl readline curl 
+#       brew link --force openssl readline curl
 #-------------------------------------------------------------------------------------------             
 #    NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory             
 #     1).  install boost 1.59 
-#           wget http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
+#           curl -LO http://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz
 #           tar -zxvf boost_1_59_0.tar.gz
 #           cd boost_1_59_0
 #           ./bootstrap.sh  
-#           ./b2
+#           ./b2 cxxflags="-arch x86_64" linkflags="-arch x86_64"
 #           ./b2 install
            
 #     2). install openssl 1.0.2k
-#           wget https://www.openssl.org/source/old/1.0.2/openssl-1.0.2k.tar.gz
+#           curl -LO https://www.openssl.org/source/old/1.0.2/openssl-1.0.2k.tar.gz
 #           tar -zxvf openssl-1.0.2k.tar.gz
 #           cd openssl-1.0.2k
-#           ./config
-#           make
+#           ./Configure darwin64-x86_64-cc --prefix= xxx 
+#           make depend
 #           make install
+
+#           details please refer to the WIKI(https://wiki.openssl.org/index.php/Compilation_and_Installation#OS_X)
 #--------------------------------------------------------------------------------------------
 #
 echo "Warning: make sure you have installed dependent packages in your system"
@@ -59,7 +61,7 @@ echo "build and  install the leveldb [1.18 or later]"
 if [ "$Isdownload" = "download" ]
 then
     echo "download leveldb version 1.20 [https://github.com/google/leveldb/releases]"
-    wget -O v1.20.tar.gz https://github.com/google/leveldb/archive/v1.20.tar.gz
+    curl -Lo v1.20.tar.gz https://github.com/google/leveldb/archive/v1.20.tar.gz
 else
     echo "Do not download leveldb source files"
 fi
@@ -85,7 +87,7 @@ echo "build and install the miniupnpc [ only  1.7 ]"
 
 if  [ "$Isdownload" = "download" ] ; then
     echo "download http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.7.20120830.tar.gz"
-    wget -O miniupnpc-1.7.20120830.tar.gz http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.7.20120830.tar.gz
+    curl -Lo miniupnpc-1.7.20120830.tar.gz http://miniupnp.free.fr/files/download.php?file=miniupnpc-1.7.20120830.tar.gz
 else
     echo "Do not download miniupnpc files"
 fi
@@ -117,7 +119,7 @@ else
 fi
 if [ -d "$fc" ]; then
     cd $fc
-    cmake .
+    cmake . [ -DOPENSSL_ROOT_DIR=xxx -DBOOST_ROOT_DIR=xxx] 
     make
     sudo cp libfc.a  /usr/local/lib/
     sudo cp $fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a /usr/local/lib

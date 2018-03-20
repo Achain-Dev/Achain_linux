@@ -1,6 +1,7 @@
 #ifndef lremote_debugger_h
 #define lremote_debugger_h
 
+#include <boost/asio.hpp>
 #include <glua/lprefix.h>
 #include <string>
 #include <vector>
@@ -8,7 +9,6 @@
 #include <memory>
 #include <thread>
 
-#include <boost/asio.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
 namespace glua
@@ -26,7 +26,7 @@ namespace glua
 
 		struct LRemoteDebuggerCommandInfo
 		{
-			// ¿ÉÑ¡: status, resume, stop, add, remove, remove_line_all, remove_all, ¿Õ×Ö·û´®
+			// å¯é€‰: status, resume, stop, add, remove, remove_line_all, remove_all, ç©ºå­—ç¬¦ä¸²
 			std::string operation;
 			std::string filename;
 			std::vector<size_t> linenumbers;
@@ -43,7 +43,7 @@ namespace glua
 			IoService *_io_service;
 			std::shared_ptr<TCP::acceptor> _acceptor;
 			std::unordered_map<std::string, std::vector<int>> _debugger_source_lines;
-			LuaDebuggerInfoList _last_lvm_debugger_status; // lvmÔËĞĞµ½¶ÏµãÊ±£¬°ÑÉÏÏÂÎÄĞÅÏ¢·ÅÈëÕâÀï
+			LuaDebuggerInfoList _last_lvm_debugger_status; // lvmè¿è¡Œåˆ°æ–­ç‚¹æ—¶ï¼ŒæŠŠä¸Šä¸‹æ–‡ä¿¡æ¯æ”¾å…¥è¿™é‡Œ
 
 			LRemoteDebuggerCommandInfo read_next_command(std::shared_ptr<TcpSocket> socket);
 
@@ -60,8 +60,8 @@ namespace glua
 			LRemoteDebugger(std::string address="0.0.0.0", int port= LREMOTE_DEBUGGER_WEB_PORT);
 			~LRemoteDebugger();
 
-			// TODO: °Ñ¶ÏµãµÄ½á¹ûÍ¨¹ısocket´«ËÍ»ØÈ¥
-			// TODO: ²âÊÔÒì²½»ñÈ¡µ÷ÊÔĞÅÏ¢
+			// TODO: æŠŠæ–­ç‚¹çš„ç»“æœé€šè¿‡socketä¼ é€å›å»
+			// TODO: æµ‹è¯•å¼‚æ­¥è·å–è°ƒè¯•ä¿¡æ¯
 			void start_async();
 
 			void shutdown();
