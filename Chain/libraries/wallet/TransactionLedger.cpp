@@ -1781,7 +1781,7 @@ vector<PrettyTransaction> Wallet::get_pretty_transaction_history(const string& a
                 {
                     const auto amount_asset_id = entry->amount.asset_id;
 
-                    //ɧ��؊��
+                    //如果是多资产转账
                     if (trx.trx_type == thinkyoung::blockchain::TransactionType::transfer_multi_asset)
                     {
                         if (((amount_asset_id != 0 && asset_symbol == ALP_BLOCKCHAIN_SYMBOL) ||
@@ -1815,7 +1815,7 @@ vector<PrettyTransaction> Wallet::get_pretty_transaction_history(const string& a
                             //if transfer multi-asset
                             if (asset_symbol == ALP_BLOCKCHAIN_SYMBOL)
                             {
-                                //multi-asset transfer OP��specify ALP_BLOCKCHAIN_SYMBOL
+                                //multi-asset transfer OP:specify ALP_BLOCKCHAIN_SYMBOL
                                 running_balances[amount_asset_id] += entry->amount;
                                 entry->amount = Asset(0, 0);
                             }
@@ -1837,7 +1837,7 @@ vector<PrettyTransaction> Wallet::get_pretty_transaction_history(const string& a
                             {
                                 running_balances[fee_asset_id] -= trx.fee;
                             }
-                            // if wallet_set_transaction_scanning true��> 1 ledger
+                            // if wallet_set_transaction_scanning true> 1 ledger
                             else
                             {
                                 entry->amount -= trx.fee;
@@ -1863,7 +1863,8 @@ vector<PrettyTransaction> Wallet::get_pretty_transaction_history(const string& a
                         }
                         else if (trx.trx_type == thinkyoung::blockchain::TransactionType::withdraw_pay_transaction)
                         {
-                            //����؊�����Ṅ�乃�����Ŀʓē෮��֢o��ԃ�۳�                        running_balances[amount_asset_id] += entry->amount;
+			    //代理领工资，不会改变该代理账户的可用余额，不用扣除
+                            running_balances[amount_asset_id] += entry->amount;
                         }
                     }
 
@@ -2374,17 +2375,16 @@ PrettyTransaction		Wallet::to_pretty_trx(const thinkyoung::blockchain::Transacti
 			pretty_entry.to_account_name = account_name_entry->name;
 			pretty_entry.amount = Asset(0); // Assume scan_withdraw came first
 
-            //֢�ࠎ޷�ͨ��ˀ�ȸ�ֳ�ֽ�ӗˇʽ��֋��Ϊ��ńז��ӗˇ���хϢ
-            //Ӳ�̖�Ŝ��Çͨ��Ҁ����ϣ���ˇ˖Ѹ�Ѳ���һ��ˇһ����Ŋ�          //̹ӔЖ՚ֻŜ�򵥴ֱ��ēĒ���0ALP4���֣�ֻҪˇ��000ALP��ɏΪˇʽ����           if (total_fee <= Asset( 1000 * ALP_BLOCKCHAIN_PRECISION ))
-            {
-                pretty_entry.memo = "update " + account_name_entry->name;
-                pretty_trx.trx_type = thinkyoung::blockchain::TransactionType::update_account_transaction;
-            }
-            else
-            {
-                pretty_entry.memo = "upgrade " + account_name_entry->name;
-                pretty_trx.trx_type = thinkyoung::blockchain::TransactionType::upgrade_account_transaction;
-            }
+                        if (total_fee <= Asset( 1000 * ALP_BLOCKCHAIN_PRECISION ))
+                        {
+                            pretty_entry.memo = "update " + account_name_entry->name;
+                            pretty_trx.trx_type = thinkyoung::blockchain::TransactionType::update_account_transaction;
+                        }
+                        else
+                        {
+                            pretty_entry.memo = "upgrade " + account_name_entry->name;
+                            pretty_trx.trx_type = thinkyoung::blockchain::TransactionType::upgrade_account_transaction;
+                        }
 
 			break;
 
@@ -2545,7 +2545,7 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
 
         for (const auto& op : result_trx.operations)
         {
-            // ע�ᶄ�Д��ɹ�ʏt
+            //注册的合约成功上链
             if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(contract_info_op_type))
                 register_success = true;
             
@@ -2571,7 +2571,8 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
         }
 
         pretty_trx.to_contract_ledger_entry = to_contract_ledger_entry;
-        // from_contract_ledger_entries Ϊ�ӊ        pretty_trx.from_contract_ledger_entries = from_contract_ledger_entries;
+        // from_contract_ledger_entries 为空
+	pretty_trx.from_contract_ledger_entries = from_contract_ledger_entries;
     }
     else if (contract_op_type == thinkyoung::blockchain::OperationTypeEnum::upgrade_contract_op_type)
     {
@@ -2600,14 +2601,17 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
                 to_contract_ledger_entry.from_account_name = account_entry->name;
         }
 
-        //�Д�ʽ��֟�Ļ��ϊ        ShareType all_cost = 0;
-        //�Д��ŋ���𷬊        ShareType withdraw_from_contract = 0;
-        //�ӺД�ת֋��Ǖͨ֋��א�Ľ𷬊        ShareType deposit_to_account = 0;
+        //合约升级者的花费
+	ShareType all_cost = 0;
+        //合约的所有的出账金额
+	ShareType withdraw_from_contract = 0;
+        //从合约转账到普通账户中的金额
+	ShareType deposit_to_account = 0;
         bool upgrade_success = false;
 
         for (const auto& op : result_trx.operations)
         {
-            // �Д��ɹ�ʽ��
+            //合约成功升级
             if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(on_upgrade_op_type))
                 upgrade_success = true;
 
@@ -2618,19 +2622,20 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
                     all_cost = all_cost + balance.second;
             }
 
-            // �Д�������֤��            if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(withdraw_contract_op_type))
+            //合约出账(含保证金)
+	    if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(withdraw_contract_op_type))
             {
                 WithdrawContractOperation withdraw_contract_op = op.as<WithdrawContractOperation>();
                 withdraw_from_contract = withdraw_from_contract + withdraw_contract_op.amount;
             }
 
-            // ԃ��ɫ֋
+            // 用户入账
             if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(deposit_op_type))
             {
                 DepositOperation deposit_op = op.as<DepositOperation>();
                 deposit_to_account = deposit_to_account + deposit_op.amount;
 
-                // вԃ��ת֋�ẻ��ӗ
+                // 向用户转账结果交易
                 PrettyContractLedgerEntry from_contract_ledger_entry;
                 from_contract_ledger_entry.from_account = contract_id.AddressToString(AddressType::contract_address);
                 from_contract_ledger_entry.from_account_name = to_contract_ledger_entry.to_account_name;
@@ -2654,7 +2659,7 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
             //to_contract_ledger_entry.memo = "upgrade contract success";
             pretty_trx.is_completed = 0;
 
-            // ��֤�𴷕˽ẻ��ӗ
+            // 保证金出账结果交易
             ShareType withdraw_margin = withdraw_from_contract - deposit_to_account;
             PrettyContractLedgerEntry from_contract_ledger_entry;
             from_contract_ledger_entry.from_account = contract_id.AddressToString(AddressType::contract_address);
@@ -2704,16 +2709,18 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
                 to_contract_ledger_entry.from_account_name = account_entry->name;
         }
 
-        //�Д�к�ڕߵĻ��ϊ        ShareType all_cost = 0;
+        //合约销毁者的花费
+	ShareType all_cost = 0;
         bool destroy_success = false;
 
         for (const auto& op : result_trx.operations)
         {
-            // �Д��ɹ�к�׊            if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(on_destroy_op_type))
+            //合约成功销毁
+	    if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(on_destroy_op_type))
             {
                 destroy_success = true;
 
-                // �Д�֋��אon_destroyûԐ΋Ϊ�œ෮΋����̹Ԑ֟  
+                // 合约账户中的on_destroy没有退完的余额退还给合约所有者
                 OnDestroyOperation on_destroy_op = op.as<OnDestroyOperation>();
 
                 if (on_destroy_op.amount.amount > 0)
@@ -2742,11 +2749,12 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
                     all_cost = all_cost + balance.second;
             }
 
-            // ԃ��ɫ֋(��΋����֤��           if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(deposit_op_type))
+            // 用户入账(含退还保证金)          
+	    if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(deposit_op_type))
             {
                 DepositOperation deposit_op = op.as<DepositOperation>();
 
-                // вԃ��ת֋�ẻ��ӗ
+                // 向用户转账结果交易
                 PrettyContractLedgerEntry from_contract_ledger_entry;
                 from_contract_ledger_entry.from_account = contract_id.AddressToString(AddressType::contract_address);
                 from_contract_ledger_entry.from_account_name = to_contract_ledger_entry.to_account_name;
@@ -2790,7 +2798,8 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
         Address contract_caller = thinkyoung::blockchain::Address(call_contract_op.caller);
         ContractIdType contract_id = call_contract_op.contract;
 
-        //����ӗΪ��Д���ӗʱ���Ȃ�Ђ��Д��ķ���ԫ��Д���ɫ�Ĳϊ�    pretty_trx.reserved.clear();
+        // 当交易为调用合约交易时，记录下调用合约的方法与调用合约传入的参数
+	pretty_trx.reserved.clear();
         pretty_trx.reserved.push_back(call_contract_op.method);
         pretty_trx.reserved.push_back(call_contract_op.args);
 
@@ -2808,12 +2817,14 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
         if (contract_entry.valid() && (contract_entry->level == ContractLevel::forever))
             to_contract_ledger_entry.to_account_name = contract_entry->contract_name;
 
-        //�Д���ߵĻ��ϊ        ShareType all_cost = 0;
+        // 合约调用者的花费
+	ShareType all_cost = 0;
         bool call_success = false;
 
         for (const auto& op : result_trx.operations)
         {
-            // �Д��ɹ���            if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(on_call_success_op_type))
+            // 合约成功调用
+	    if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(on_call_success_op_type))
                 call_success = true;
 
             if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(balances_withdraw_op_type))
@@ -2827,7 +2838,7 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
             {
                 DepositOperation deposit_op = op.as<DepositOperation>();
 
-                // вԃ��ת֋�ẻ��ӗ
+                // 向用户转账结果交易
                 PrettyContractLedgerEntry from_contract_ledger_entry;
                 from_contract_ledger_entry.from_account = contract_id.AddressToString(AddressType::contract_address);
                 from_contract_ledger_entry.from_account_name = to_contract_ledger_entry.to_account_name;
@@ -2888,12 +2899,13 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
        
         ShareType transfer_amount = transfer_contract_op.transfer_amount.amount;
 
-        //�Д�ת֋֟�Ļ��ϊ        ShareType all_cost = 0;
+        // 合约转账者的花费
+	ShareType all_cost = 0;
         bool transfer_success = false;
 
         for (const auto& op : result_trx.operations)
         {
-            // в�Д��ɹ��喵
+            // 向合约成功充值
             if (op.type == fc::enum_type<uint8_t, thinkyoung::blockchain::OperationTypeEnum>(deposit_contract_op_type))
                 transfer_success = true;
 
@@ -2908,7 +2920,7 @@ PrettyContractTransaction		Wallet::to_pretty_contract_trx(const thinkyoung::bloc
             {
                 DepositOperation deposit_op = op.as<DepositOperation>();
 
-                // вԃ��ת֋�ẻ��ӗ
+                // 向用户转账结果交易
                 PrettyContractLedgerEntry from_contract_ledger_entry;
                 from_contract_ledger_entry.from_account = contract_id.AddressToString(AddressType::contract_address);
                 from_contract_ledger_entry.from_account_name = to_contract_ledger_entry.to_account_name;
