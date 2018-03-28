@@ -99,6 +99,8 @@
 #define ALP_BLOCKCHAIN_MCALL_D2C_NUMERATOR                  1
 #define ALP_BLOCKCHAIN_MCALL_D2C_DENOMINATOR                2
 
+#define ALP_BLOCKCHAIN_LOCAL_CRITICAL_PENDING_QUEUE_SIZE    30   //Local critical pending queue size
+
 // TODO: This stuff only matters for propagation throttling; should go somewhere else
 #define ALP_BLOCKCHAIN_DEFAULT_RELAY_FEE                    1000 // XTS
 #define ALP_BLOCKCHAIN_MAX_TRX_PER_SECOND                   1000  // (1000)

@@ -148,6 +148,28 @@ namespace thinkyoung {
                 return trxs;
             }
             
+            //count the contract number in pending transactions
+            uint32_t ClientImpl::get_pending_contract_trx_size() {
+                // set limit in  sandbox state
+                if (_chain_db->get_is_in_sandbox())
+                    FC_THROW_EXCEPTION(sandbox_command_forbidden, "in sandbox, this command is forbidden, you cannot call it!");
+                    
+                uint32_t iContractSize = 0;
+                vector<TransactionEvaluationStatePtr> pending = _chain_db->get_pending_transactions();
+                
+                for (const auto& trx_eval_ptr : pending) {
+                    for (const auto operation : trx_eval_ptr->trx.operations) {
+                        if (operation.type == register_contract_op_type || operation.type == upgrade_contract_op_type || operation.type == destroy_contract_op_type
+                                || operation.type == call_contract_op_type || operation.type == transfer_contract_op_type || operation.type == withdraw_contract_op_type
+                                || operation.type == deposit_contract_op_type) {
+                            iContractSize++;
+                            break;
+                        }
+                    }
+                }
+                
+                return iContractSize;
+            }
             
             uint32_t detail::ClientImpl::blockchain_get_block_count() const {
                 // set limit in  sandbox state
@@ -156,7 +178,6 @@ namespace thinkyoung {
                     
                 return _chain_db->get_head_block_num();
             }
-            
             oAccountEntry detail::ClientImpl::blockchain_get_account(const string& account)const {
                 // set limit in  sandbox state
                 if (_chain_db->get_is_in_sandbox())

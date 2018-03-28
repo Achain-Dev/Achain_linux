@@ -62,11 +62,11 @@ linux_installation_guide:
             NOTE : if you install boost and openssl into some other directory, you need change the CMakeList.txt,
             whereabouts the option ${centos}
                 
-2. For Centos 7.3.1611 systems (currently just test for Centos 7.3.1611)
+2. For Centos 7.2/ 7.3.1611 systems (currently just test for Centos 7.2 & 7.3.1611)
     GCC 4.8.5
     pre-installation:
      install denpendancy packages
-             sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel build-essential pkgconfig python-dev autoconf autotools-devel libicu-devel libbz2-devel
+             sudo yum -y install cmake git readline-devel uuid-devel g++ ncurses-devel zip openssl openssl-devel openssl-static build-essential pkgconfig python-dev autoconf autotools-devel libicu-devel libbz2-devel
              export LC_ALL="en_US.UTF-8"
              
      NOTE： Manually install Boost 1.59 and openssl 1.0.2k into default /usr/local directory
