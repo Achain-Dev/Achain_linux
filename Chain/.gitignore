@@ -3,6 +3,7 @@
 x64
 .vs
 *.sdf
+*.user
 *.suo
 *.out
 *.VC.db

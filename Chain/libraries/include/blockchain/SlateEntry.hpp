@@ -9,27 +9,18 @@ namespace thinkyoung {
         typedef optional<SlateEntry> oSlateEntry;
 
         class ChainInterface;
-        struct SlateEntry
-        {
+        struct SlateEntry {
             set<AccountIdType> slate;
             vector<AccountIdType> duplicate_slate;
 
             SlateIdType id()const;
-
-            static SlateIdType id_v1(const vector<AccountIdType>& slate)
-            {
-                if (slate.empty()) return 0;
-                return fc::sha256::hash(slate)._hash[0];
-            }
-
             void sanity_check(const ChainInterface&)const;
             static oSlateEntry lookup(const ChainInterface&, const SlateIdType);
             static void store(ChainInterface&, const SlateIdType, const SlateEntry&);
             static void remove(ChainInterface&, const SlateIdType);
         };
 
-        class SlateDbInterface
-        {
+        class SlateDbInterface {
             friend struct SlateEntry;
 
             virtual oSlateEntry slate_lookup_by_id(const SlateIdType)const = 0;

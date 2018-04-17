@@ -13,8 +13,7 @@
 namespace thinkyoung {
     namespace blockchain {
 
-        enum TransactionType
-        {
+        enum TransactionType {
             normal_transaction = 0,
             withdraw_pay_transaction = 1,        //代理取工资
             register_account_transaction = 2,    //注册账户
@@ -34,8 +33,7 @@ namespace thinkyoung {
             call_contract_transaction = 14
         };
 
-        enum ResultTransactionType
-        {
+        enum ResultTransactionType {
             origin_transaction = 0,          //原始交易
             complete_result_transaction = 1,       //完整的结果交易
             incomplete_result_transaction = 2,       //不完整的结果交易
@@ -43,8 +41,7 @@ namespace thinkyoung {
 
         struct market_index_key;
         struct Code;
-        struct Transaction
-        {
+        struct Transaction {
             fc::time_point_sec    expiration;
             optional<uint64_t>    reserved;
             string alp_account;
@@ -70,11 +67,6 @@ namespace thinkyoung {
 
 
             void deposit_multisig(const MultisigMetaInfo& info, const Asset& amount);
-
-            void release_escrow(const Address& escrow_account,
-                const Address& released_by,
-                ShareType amount_to_sender,
-                ShareType amount_to_receiver);
 
             PublicKeyType deposit_to_escrow(fc::ecc::public_key receiver_key,
                 fc::ecc::public_key escrow_key,
@@ -163,8 +155,7 @@ namespace thinkyoung {
 
         }; // transaction
 
-        struct SignedTransaction : public Transaction
-        {
+        struct SignedTransaction : public Transaction {
             TransactionIdType   id()const;
             size_t                data_size()const;
             void                  sign(const fc::ecc::private_key& signer, const DigestType& chain_id);
@@ -178,8 +169,7 @@ namespace thinkyoung {
         };
         typedef vector<SignedTransaction> signed_transactions;
         typedef optional<SignedTransaction> osigned_transaction;
-        struct AlpTrxidBalance
-        {
+        struct AlpTrxidBalance {
             AlpTrxidBalance(){};
             AlpTrxidBalance(string alp_account, TransactionIdType trx_id, Asset asset_trx, uint32_t
                 block_num, string from_account, fc::time_point_sec create_time) :
@@ -208,13 +198,11 @@ namespace thinkyoung {
                 return alpa.block_num != alpb.block_num;
             }
         };
-        struct AlpBalanceEntry
-        {
+        struct AlpBalanceEntry {
             std::set<TransactionIdType> alp_trxid_sort;
             std::multimap<uint32_t, AlpTrxidBalance> alp_block_sort;
         };
-        struct TransactionLocation
-        {
+        struct TransactionLocation {
             TransactionLocation(uint32_t block_num = 0, uint32_t trx_num = 0)
                 :block_num(block_num), trx_num(trx_num){}
 

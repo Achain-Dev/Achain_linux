@@ -9,23 +9,20 @@
 namespace thinkyoung {
     namespace blockchain {
 
-        BalanceIdType DepositOperation::balance_id()const
-        {
+        BalanceIdType DepositOperation::balance_id()const {
             return condition.get_address();
         }
 
         DepositOperation::DepositOperation(const Address& owner,
             const Asset& amnt,
-            SlateIdType slate_id)
-        {
+                                           SlateIdType slate_id) {
             FC_ASSERT(amnt.amount > 0, "Amount should be bigger than 0");
             amount = amnt.amount;
             condition = WithdrawCondition(WithdrawWithSignature(owner),
                 amnt.asset_id, slate_id);
         }
 
-        void DepositOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
+        void DepositOperation::evaluate(TransactionEvaluationState& eval_state)const {
             try {
 				if (eval_state.deposit_count > ALP_BLOCKCHAIN_TRANSACTION_MAX_DEPOSIT_NUM)
 					FC_CAPTURE_AND_THROW(too_much_deposit,(eval_state.deposit_count));
@@ -33,8 +30,7 @@ namespace thinkyoung {
                 if (this->amount <= 0)
                     FC_CAPTURE_AND_THROW(negative_deposit, (amount));
 
-                switch (WithdrawConditionTypes(this->condition.type))
-                {
+                switch (WithdrawConditionTypes(this->condition.type)) {
                 case withdraw_signature_type:
                 case withdraw_multisig_type:
                 case withdraw_escrow_type:
@@ -45,28 +41,25 @@ namespace thinkyoung {
 
 
                 const BalanceIdType deposit_balance_id = this->balance_id();
-
                 oBalanceEntry cur_entry = eval_state._current_state->get_balance_entry(deposit_balance_id);
-                if (!cur_entry.valid())
-                {
+
+                if (!cur_entry.valid()) {
                     cur_entry = BalanceEntry(this->condition);
                     if (this->condition.type == withdraw_escrow_type)
                         cur_entry->meta_data = variant_object("creating_transaction_id", eval_state.trx.id());
                 }
 				auto owner = cur_entry->owner();
-				if (owner.valid())
-				{
-					if (!eval_state.deposit_address.insert(*owner).second)
-					{
+                
+                if (owner.valid()) {
+                    if (!eval_state.deposit_address.insert(*owner).second) {
 						FC_CAPTURE_AND_THROW(deposit_to_one_address_twice,(*owner));
 					}
 				}
-                if (cur_entry->balance == 0)
-                {
+                
+                if (cur_entry->balance == 0) {
                     cur_entry->deposit_date = eval_state._current_state->now();
-                }
-                else
-                {
+                    
+                } else {
                     fc::uint128 old_sec_since_epoch(cur_entry->deposit_date.sec_since_epoch());
                     fc::uint128 new_sec_since_epoch(eval_state._current_state->now().sec_since_epoch());
 
@@ -88,25 +81,20 @@ namespace thinkyoung {
                 const oAssetEntry asset_rec = eval_state._current_state->get_asset_entry(cur_entry->condition.asset_id);
                 FC_ASSERT(asset_rec.valid(), "Invalid asset entry");
 
-                // if( eval_state._current_state->get_head_block_num() >= ALP_V0_6_0_FORK_BLOCK_NUM )
-                //{
-                //FC_ASSERT( !eval_state._current_state->is_fraudulent_asset( *asset_rec ) );
-                //}
-                if (asset_rec->is_restricted())
-                {
-                    for (const auto& owner : cur_entry->owners())
-                    {
+                if (asset_rec->is_restricted()) {
+                    for (const auto& owner : cur_entry->owners()) {
                         // TODO
                         //FC_ASSERT( eval_state._current_state->get_authorization(asset_rec->id, owner) );
                     }
                 }
 
                 eval_state._current_state->store_balance_entry(*cur_entry);
-            } FC_CAPTURE_AND_RETHROW((*this))
         }
 
-        void WithdrawOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
+            FC_CAPTURE_AND_RETHROW((*this))
+        }
+        
+        void WithdrawOperation::evaluate(TransactionEvaluationState& eval_state)const {
             try {
 
                 if (this->amount <= 0)
@@ -123,14 +111,11 @@ namespace thinkyoung {
                 FC_ASSERT(asset_rec.valid(), "Invalid asset entry");
                 bool issuer_override = asset_rec->is_retractable() && eval_state.verify_authority(asset_rec->authority);
 
-                if (!issuer_override)
-                {
+                if (!issuer_override) {
                     FC_ASSERT(!asset_rec->is_balance_frozen(), "Balance frozen");
 
-                    switch ((WithdrawConditionTypes)current_balance_entry->condition.type)
-                    {
-                    case withdraw_signature_type:
-                    {
+                    switch ((WithdrawConditionTypes)current_balance_entry->condition.type) {
+                        case withdraw_signature_type: {
                         const WithdrawWithSignature condition = current_balance_entry->condition.as<WithdrawWithSignature>();
                         const Address owner = condition.owner;
                         if (!eval_state.check_signature(owner))
@@ -141,12 +126,11 @@ namespace thinkyoung {
                         break;
                     }
 
-                    case withdraw_multisig_type:
-                    {
+                        case withdraw_multisig_type: {
                         auto multisig = current_balance_entry->condition.as<WithdrawWithMultisig>();
                         uint32_t valid_signatures = 0;
-                        for (const auto& sig : multisig.owners)
-                        {
+                            
+                            for (const auto& sig : multisig.owners) {
                             // TODO
                             //if( asset_rec->is_restricted() && NOT eval_state._current_state->get_authorization(asset_rec->id, owner) )
                             //continue;
@@ -170,24 +154,22 @@ namespace thinkyoung {
                 current_balance_entry->balance = temp.value;
                 eval_state.add_balance(Asset(this->amount, current_balance_entry->condition.asset_id));
 				auto owner = current_balance_entry->owner();
-				if (temp > 0 && owner.valid())
-				{
+                
+                if (temp > 0 && owner.valid()) {
 					auto res=eval_state.owner_balance_not_usedup.insert(*owner);
 #if 0
 					if (!res.second)
-                    {
                         FC_CAPTURE_AND_THROW(too_much_balances_withdraw_not_used_up, (*owner));
-                    }
 #endif
 				}
                 current_balance_entry->last_update = eval_state._current_state->now();
-				
                 eval_state._current_state->store_balance_entry(*current_balance_entry);
-            } FC_CAPTURE_AND_RETHROW((*this))
+            }
+				
+            FC_CAPTURE_AND_RETHROW((*this))
         }
 
-        void WithdrawContractOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
+        void WithdrawContractOperation::evaluate(TransactionEvaluationState& eval_state)const {
             try {
                 if (!eval_state.evaluate_contract_result)
                     FC_CAPTURE_AND_THROW(in_result_of_execute, ("WithdrawContractOperation can only in result transaction"));
@@ -197,14 +179,12 @@ namespace thinkyoung {
                     FC_CAPTURE_AND_THROW(negative_withdraw, (amount));
 				
                 oBalanceEntry current_balance_entry = eval_state._current_state->get_balance_entry(this->balance_id);
-				if (!current_balance_entry.valid())
-				{
-					if (contract == ContractIdType())
-					{
+                
+                if (!current_balance_entry.valid()) {
+                    if (contract == ContractIdType()) {
 						FC_CAPTURE_AND_THROW(unknown_balance_entry,(balance_id));
-					}
-					else
-					{
+                        
+                    } else {
 						FC_ASSERT(balance_id == balance_entry.condition.get_address());
 					}
 					balance_entry.balance = 0;
@@ -223,164 +203,12 @@ namespace thinkyoung {
 
                 eval_state._current_state->store_balance_entry(*current_balance_entry);
 				eval_state.withdrawed_contract_balance.push_back(balance_id);
-            } FC_CAPTURE_AND_RETHROW((*this))
         }
 
-        void ReleaseEscrowOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
-            try {
-                FC_ASSERT(!"This operation is not enabled yet!");
-
-                auto escrow_balance_entry = eval_state._current_state->get_balance_entry(this->escrow_id);
-                FC_ASSERT(escrow_balance_entry.valid(), "Invalid balance entry");
-
-                if (!eval_state.check_signature(this->released_by))
-                    FC_ASSERT(false, "transaction not signed by releasor");
-                FC_ASSERT(escrow_balance_entry->balance >= 0);
-                auto escrow_condition = escrow_balance_entry->condition.as<withdraw_with_escrow>();
-                auto total_released = uint64_t((fc::safe<ShareType>(amount_to_sender) + fc::safe<ShareType>(amount_to_receiver)).value);
-                //auto total_released = uint64_t(amount_to_sender) + uint64_t(amount_to_receiver);
-
-                FC_ASSERT(total_released <= static_cast<uint64_t>(escrow_balance_entry->balance));
-                FC_ASSERT(total_released >= amount_to_sender); // check for addition overflow
-                FC_ASSERT(total_released >= amount_to_receiver); // check for addition overflow
-
-                escrow_balance_entry->balance -= total_released;
-                auto asset_rec = eval_state._current_state->get_asset_entry(escrow_balance_entry->condition.asset_id);
-
-                if (asset_rec->is_restricted())
-                {
-                    // TODO
-                    //if( amount_to_sender > 0 )
-                    //FC_ASSERT( eval_state._current_state->get_authorization( escrow_balance_entry->condition.asset_id, escrow_condition.sender ) );
-                    //if( amount_to_receiver > 0 )
-                    //FC_ASSERT( eval_state._current_state->get_authorization( escrow_balance_entry->condition.asset_id, escrow_condition.receiver ) );
+            FC_CAPTURE_AND_RETHROW((*this))
                 }
 
-                bool retracting = false;
-                if (asset_rec->is_retractable())
-                {
-                    if (eval_state.verify_authority(asset_rec->authority))
-                    {
-                        retracting = true;
-                    }
-                }
-
-                if (escrow_condition.sender == this->released_by)
-                {
-                    FC_ASSERT(amount_to_sender == 0);
-                    FC_ASSERT(amount_to_receiver <= escrow_balance_entry->balance);
-
-                    if (!eval_state.check_signature(escrow_condition.sender) && !retracting)
-                        FC_CAPTURE_AND_THROW(missing_signature, (escrow_condition.sender));
-
-                    BalanceEntry new_balance_entry(escrow_condition.receiver,
-                        Asset(amount_to_receiver, escrow_balance_entry->asset_id()),
-                        escrow_balance_entry->slate_id());
-                    auto current_receiver_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-                    if (current_receiver_balance)
-                        current_receiver_balance->balance += amount_to_receiver;
-                    else
-                        current_receiver_balance = new_balance_entry;
-
-                    eval_state._current_state->store_balance_entry(*current_receiver_balance);
-                }
-                else if (escrow_condition.receiver == this->released_by)
-                {
-                    FC_ASSERT(amount_to_receiver == 0);
-                    FC_ASSERT(amount_to_sender <= escrow_balance_entry->balance);
-
-                    if (!eval_state.check_signature(escrow_condition.receiver) && !retracting)
-                        FC_CAPTURE_AND_THROW(missing_signature, (escrow_condition.receiver));
-
-                    BalanceEntry new_balance_entry(escrow_condition.sender,
-                        Asset(amount_to_sender, escrow_balance_entry->asset_id()),
-                        escrow_balance_entry->slate_id());
-                    auto current_sender_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-                    if (current_sender_balance)
-                        current_sender_balance->balance += amount_to_sender;
-                    else
-                        current_sender_balance = new_balance_entry;
-
-                    eval_state._current_state->store_balance_entry(*current_sender_balance);
-                }
-                else if (escrow_condition.escrow == this->released_by)
-                {
-                    if (!eval_state.check_signature(escrow_condition.escrow) && !retracting)
-                        FC_CAPTURE_AND_THROW(missing_signature, (escrow_condition.escrow));
-                    // get a balance entry for the receiver, create it if necessary and deposit funds
-                    {
-                        BalanceEntry new_balance_entry(escrow_condition.receiver,
-                            Asset(amount_to_receiver, escrow_balance_entry->asset_id()),
-                            escrow_balance_entry->slate_id());
-                        auto current_receiver_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-                        if (current_receiver_balance)
-                            current_receiver_balance->balance += amount_to_receiver;
-                        else
-                            current_receiver_balance = new_balance_entry;
-                        eval_state._current_state->store_balance_entry(*current_receiver_balance);
-                    }
-                    //  get a balance entry for the sender, create it if necessary and deposit funds
-         {
-             BalanceEntry new_balance_entry(escrow_condition.sender,
-                 Asset(amount_to_sender, escrow_balance_entry->asset_id()),
-                 escrow_balance_entry->slate_id());
-             auto current_sender_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-             if (current_sender_balance)
-                 current_sender_balance->balance += amount_to_sender;
-             else
-                 current_sender_balance = new_balance_entry;
-             eval_state._current_state->store_balance_entry(*current_sender_balance);
-         }
-                }
-                else if (Address() == this->released_by)
-                {
-                    if (!eval_state.check_signature(escrow_condition.sender) && !retracting)
-                        FC_CAPTURE_AND_THROW(missing_signature, (escrow_condition.sender));
-                    if (!eval_state.check_signature(escrow_condition.receiver) && !retracting)
-                        FC_CAPTURE_AND_THROW(missing_signature, (escrow_condition.receiver));
-                    // get a balance entry for the receiver, create it if necessary and deposit funds
-                    {
-                        BalanceEntry new_balance_entry(escrow_condition.receiver,
-                            Asset(amount_to_receiver, escrow_balance_entry->asset_id()),
-                            escrow_balance_entry->slate_id());
-                        auto current_receiver_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-                        if (current_receiver_balance)
-                            current_receiver_balance->balance += amount_to_receiver;
-                        else
-                            current_receiver_balance = new_balance_entry;
-                        eval_state._current_state->store_balance_entry(*current_receiver_balance);
-                    }
-                    //  get a balance entry for the sender, create it if necessary and deposit funds
-         {
-             BalanceEntry new_balance_entry(escrow_condition.sender,
-                 Asset(amount_to_sender, escrow_balance_entry->asset_id()),
-                 escrow_balance_entry->slate_id());
-             auto current_sender_balance = eval_state._current_state->get_balance_entry(new_balance_entry.id());
-
-             if (current_sender_balance)
-                 current_sender_balance->balance += amount_to_sender;
-             else
-                 current_sender_balance = new_balance_entry;
-             eval_state._current_state->store_balance_entry(*current_sender_balance);
-         }
-                }
-                else
-                {
-                    FC_ASSERT(false, "not released by a party to the escrow transaction");
-                }
-
-                eval_state._current_state->store_balance_entry(*escrow_balance_entry);
-            } FC_CAPTURE_AND_RETHROW((*this))
-        }
-
-        void BalancesWithdrawOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
+        void BalancesWithdrawOperation::evaluate(TransactionEvaluationState& eval_state)const {
             try {
                 if (!eval_state.evaluate_contract_result)
                     FC_CAPTURE_AND_THROW(not_be_result_of_execute, ("BalancesWithdrawOperation can only exsit in result"));
@@ -390,8 +218,8 @@ namespace thinkyoung {
                     FC_CAPTURE_AND_THROW(missing_signature, (contract_operator_address));
 
                 std::map < BalanceIdType, ShareType > ::const_iterator it = balances.begin();
-                while (it != balances.end())
-                {
+                
+                while (it != balances.end()) {
                     if (it->second <= 0)
                         FC_CAPTURE_AND_THROW(negative_withdraw, (it->second));
 
@@ -408,14 +236,11 @@ namespace thinkyoung {
                     FC_ASSERT(asset_rec.valid(), "Invalid asset entry");
                     bool issuer_override = asset_rec->is_retractable() && eval_state.verify_authority(asset_rec->authority);
 
-                    if (!issuer_override)
-                    {
+                    if (!issuer_override) {
                         FC_ASSERT(!asset_rec->is_balance_frozen(), "Balance frozen");
 
-                        switch ((WithdrawConditionTypes)current_balance_entry->condition.type)
-                        {
-                        case withdraw_signature_type:
-                        {
+                        switch ((WithdrawConditionTypes)current_balance_entry->condition.type) {
+                            case withdraw_signature_type: {
                             const WithdrawWithSignature condition = current_balance_entry->condition.as<WithdrawWithSignature>();
                             const Address owner = condition.owner;
                             if (!eval_state.check_signature(owner))
@@ -447,12 +272,12 @@ namespace thinkyoung {
                     eval_state._current_state->store_balance_entry(*current_balance_entry);
                     ++it;
                 }
+            }
 
-            }FC_CAPTURE_AND_RETHROW((*this));
+            FC_CAPTURE_AND_RETHROW((*this));
         }
 
-        void UpdateBalanceVoteOperation::evaluate(TransactionEvaluationState& eval_state)const
-        {
+        void UpdateBalanceVoteOperation::evaluate(TransactionEvaluationState& eval_state)const {
             try {
                 FC_ASSERT(false, "Disable UpdateBalanceVoteOperation!");
                 auto current_balance_entry = eval_state._current_state->get_balance_entry(this->balance_id);
@@ -473,8 +298,7 @@ namespace thinkyoung {
 
                 auto asset_rec = eval_state._current_state->get_asset_entry(current_balance_entry->condition.asset_id);
 
-                if (current_balance_entry->condition.slate_id)
-                {
+                if (current_balance_entry->condition.slate_id) {
                     eval_state.adjust_vote(current_balance_entry->condition.slate_id, -balance);
                 }
                 current_balance_entry->balance -= balance;
@@ -486,20 +310,17 @@ namespace thinkyoung {
                 auto new_restricted_owner = current_balance_entry->restricted_owner;
                 auto new_slate = current_balance_entry->condition.slate_id;
 
-
-                if (this->new_restricted_owner.valid() && (this->new_restricted_owner != new_restricted_owner))
-                {
+                if (this->new_restricted_owner.valid() && (this->new_restricted_owner != new_restricted_owner)) {
                     ilog("@n new restricted owner specified and its not the existing one");
-                    for (const auto& owner : current_balance_entry->owners()) //eventually maybe multisig can delegate vote
-                    {
+
+                    for (const auto& owner : current_balance_entry->owners()) { //eventually maybe multisig can delegate vote
                         if (!eval_state.check_signature(owner))
                             FC_CAPTURE_AND_THROW(missing_signature, (owner));
                     }
                     new_restricted_owner = this->new_restricted_owner;
                     new_slate = this->new_slate;
-                }
-                else // NOT this->new_restricted_owner.valid() || (this->new_restricted_owner == new_restricted_owner)
-                {
+                    
+                } else { // NOT this->new_restricted_owner.valid() || (this->new_restricted_owner == new_restricted_owner)
                     auto restricted_owner = current_balance_entry->restricted_owner;
                     /*
                     FC_ASSERT( restricted_owner.valid(),
@@ -511,10 +332,8 @@ namespace thinkyoung {
                         >= ALP_BLOCKCHAIN_VOTE_UPDATE_PERIOD_SEC,
                         "You cannot update your vote this frequently with only the voting key!");
 
-                    if (NOT eval_state.check_signature(*restricted_owner))
-                    {
-                        for (const auto& owner : current_balance_entry->owners()) //eventually maybe multisig can delegate vote
-                        {
+                    if (NOT eval_state.check_signature(*restricted_owner)) {
+                        for (const auto& owner : current_balance_entry->owners()) { //eventually maybe multisig can delegate vote
                             if (NOT eval_state.check_signature(owner))
                                 FC_CAPTURE_AND_THROW(missing_signature, (owner));
                         }
@@ -531,12 +350,10 @@ namespace thinkyoung {
                     new_balance_entry = current_balance_entry;
                 new_balance_entry->condition = new_condition;
 
-                if (new_balance_entry->balance == 0)
-                {
+                if (new_balance_entry->balance == 0) {
                     new_balance_entry->deposit_date = eval_state._current_state->now();
-                }
-                else
-                {
+                    
+                } else {
                     fc::uint128 old_sec_since_epoch(current_balance_entry->deposit_date.sec_since_epoch());
                     fc::uint128 new_sec_since_epoch(eval_state._current_state->now().sec_since_epoch());
 
@@ -558,17 +375,16 @@ namespace thinkyoung {
 
                 ilog("I'm storing a balance entry whose last update is: ${secs}", ("secs", new_balance_entry->last_update));
                 eval_state._current_state->store_balance_entry(*new_balance_entry);
+            }
 
-            } FC_CAPTURE_AND_RETHROW((*this))
+            FC_CAPTURE_AND_RETHROW((*this))
         }
 
-        BalanceIdType DepositContractOperation::balance_id()const
-        {
+        BalanceIdType DepositContractOperation::balance_id()const {
             return condition.get_address();
         }
 
-        void DepositContractOperation::evaluate(TransactionEvaluationState & eval_state) const
-        {
+        void DepositContractOperation::evaluate(TransactionEvaluationState & eval_state) const {
             try {
 
                 if (!eval_state.evaluate_contract_result)
@@ -577,8 +393,7 @@ namespace thinkyoung {
                 if (this->amount <= 0)
                     FC_CAPTURE_AND_THROW(negative_deposit, (amount));
 
-                switch (WithdrawConditionTypes(this->condition.type))
-                {
+                switch (WithdrawConditionTypes(this->condition.type)) {
                 case withdraw_signature_type:
                 case withdraw_multisig_type:
                 case withdraw_escrow_type:
@@ -588,21 +403,18 @@ namespace thinkyoung {
                 }
 
                 const BalanceIdType deposit_balance_id = this->balance_id();
-
                 oBalanceEntry cur_entry = eval_state._current_state->get_balance_entry(deposit_balance_id);
-                if (!cur_entry.valid())
-                {
+
+                if (!cur_entry.valid()) {
                     cur_entry = BalanceEntry(this->condition);
                     if (this->condition.type == withdraw_escrow_type)
                         cur_entry->meta_data = variant_object("creating_transaction_id", eval_state.trx.id());
                 }
 
-                if (cur_entry->balance == 0)
-                {
+                if (cur_entry->balance == 0) {
                     cur_entry->deposit_date = eval_state._current_state->now();
-                }
-                else
-                {
+                    
+                } else {
                     fc::uint128 old_sec_since_epoch(cur_entry->deposit_date.sec_since_epoch());
                     fc::uint128 new_sec_since_epoch(eval_state._current_state->now().sec_since_epoch());
 
@@ -627,17 +439,17 @@ namespace thinkyoung {
                 //{
                 //FC_ASSERT( !eval_state._current_state->is_fraudulent_asset( *asset_rec ) );
                 //}
-                if (asset_rec->is_restricted())
-                {
-                    for (const auto& owner : cur_entry->owners())
-                    {
+                if (asset_rec->is_restricted()) {
+                    for (const auto& owner : cur_entry->owners()) {
                         // TODO
                         //FC_ASSERT( eval_state._current_state->get_authorization(asset_rec->id, owner) );
                     }
                 }
 
                 eval_state._current_state->store_balance_entry(*cur_entry);
-            } FC_CAPTURE_AND_RETHROW((*this))
+            }
+            
+            FC_CAPTURE_AND_RETHROW((*this))
         }
 
     }

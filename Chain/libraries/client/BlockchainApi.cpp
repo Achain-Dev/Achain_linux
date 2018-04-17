@@ -850,8 +850,7 @@ namespace thinkyoung {
                     _p2p_node->dump_peerdb_state(fc::path(path), ldbname);
 
                     if ("blacklist.leveldb" == ldbname ||
-                        "peers.leveldb" == ldbname)
-                    {
+                        "peers.leveldb" == ldbname) {
                         return;
                     }
                     // set limit in  sandbox state

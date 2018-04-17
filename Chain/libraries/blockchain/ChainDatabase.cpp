@@ -3409,7 +3409,6 @@ namespace thinkyoung {
                 {
                     fc::create_directories(dir);
                 }
-                elog("ChainDatabase::dump_state elogtest!");
 
                 if ("ALL" == ldbname)
                 { 

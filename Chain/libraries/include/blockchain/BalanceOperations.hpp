@@ -10,8 +10,7 @@ namespace thinkyoung {
         /** withdraws funds and moves them into the transaction
          * balance making them available for deposit
          */
-        struct WithdrawOperation
-        {
+        struct WithdrawOperation {
             static const OperationTypeEnum type;
 
             WithdrawOperation() :amount(0){}
@@ -37,8 +36,7 @@ namespace thinkyoung {
          *  defined.  After the first deposit then future
          *  deposits merely reference the address.
          */
-        struct DepositOperation
-        {
+        struct DepositOperation {
             static const OperationTypeEnum type;
             /** owner is just the hash of the condition */
             BalanceIdType                balance_id()const;
@@ -56,8 +54,7 @@ namespace thinkyoung {
         };
 
         // for contract withdraw
-        struct WithdrawContractOperation
-        {
+        struct WithdrawContractOperation {
             static const OperationTypeEnum type;
 
             WithdrawContractOperation() :amount(0){}
@@ -75,13 +72,11 @@ namespace thinkyoung {
         };
 
         // for contract deposit
-        enum DepositContractType 
-        {
+        enum DepositContractType {
             deposit_contract_normal,
             deposit_contract_margin
         };
-        struct DepositContractOperation
-        {
+        struct DepositContractOperation {
 
             static const OperationTypeEnum type;
             DepositContractOperation() {}
@@ -94,28 +89,7 @@ namespace thinkyoung {
             void evaluate(TransactionEvaluationState& eval_state)const;
         };
 
-
-
-        /**
-         *  Burn operations takes shares out of circulation unless they
-         *  are BitAssets in which case it goes to collected fees and is
-         *  distributed as yield.
-         */
-
-        struct ReleaseEscrowOperation
-        {
-            static const OperationTypeEnum type;
-
-            BalanceIdType  escrow_id;
-            Address          released_by;
-            ShareType       amount_to_receiver = 0;
-            ShareType       amount_to_sender = 0;
-
-            void evaluate(TransactionEvaluationState& eval_state)const;
-        };
-
-        struct BalancesWithdrawOperation
-        {
+        struct BalancesWithdrawOperation {
             static const OperationTypeEnum type;
 
             BalancesWithdrawOperation(){}
@@ -129,8 +103,7 @@ namespace thinkyoung {
         /* Moves funds to a new balance with the same owner key but different votes
          * and restricted owner key.
          */
-        struct UpdateBalanceVoteOperation
-        {
+        struct UpdateBalanceVoteOperation {
             static const OperationTypeEnum type;
 
             BalanceIdType     balance_id;
@@ -164,5 +137,4 @@ FC_REFLECT(thinkyoung::blockchain::WithdrawOperation, (balance_id)(amount)(claim
 FC_REFLECT(thinkyoung::blockchain::DepositOperation, (amount)(condition))
 FC_REFLECT(thinkyoung::blockchain::WithdrawContractOperation, (balance_id)(amount)(contract))
 FC_REFLECT(thinkyoung::blockchain::BalancesWithdrawOperation, (balances))
-FC_REFLECT(thinkyoung::blockchain::ReleaseEscrowOperation, (escrow_id)(released_by)(amount_to_receiver)(amount_to_sender))
 FC_REFLECT(thinkyoung::blockchain::UpdateBalanceVoteOperation, (balance_id)(new_restricted_owner)(new_slate))
