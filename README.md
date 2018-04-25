@@ -10,7 +10,7 @@
 
 We already support the following platforms:
 
-* CentOS/RHEL 7.2.1511 / 7.3.1611 
+* CentOS / RHEL / Oracle Linux  7.2.1511 / 7.3.1611 
 * Ubuntu 16.04
 * MacOS Darwin 10.13
 * Fedora 27 / 25
@@ -19,7 +19,6 @@ We already support the following platforms:
 
 We will support the following platforms in the future:
 
-* Oracle Linux
 * Debian
 
 License
