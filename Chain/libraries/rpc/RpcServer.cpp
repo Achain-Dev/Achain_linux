@@ -1147,6 +1147,17 @@ namespace thinkyoung {
                     fc::http::reply::status_code status = fc::http::reply::OK;
                     std::string str(r.body.data(), r.body.size());
                     //wlog( "RPC: ${r}", ("r",str) );
+                    try{
+                        auto json_str = fc::json::from_string(str);
+                    }catch(...){
+                        std::string message = "Invalid RPC Request body\n";
+                        s.set_length(message.size());
+                        status = fc::http::reply::BadRequest;
+                        s.set_status(status);
+                        s.write(message.c_str(), message.size());
+
+                        return status;
+                    } 
                     fc::string method_name;
 
                     fc::optional<std::string> invalid_rpc_request_message;
